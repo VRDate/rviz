@@ -48,26 +48,23 @@ TimePanel::TimePanel( QWidget* parent )
   ros_time_label_ = makeTimeLabel();
   ros_elapsed_label_ = makeTimeLabel();
 
-  QPushButton* reset_button = new QPushButton( "Reset" );
+  QPushButton* pause_button = new QPushButton( "Pause" );
+  pause_button->setCheckable(true);
 
   QHBoxLayout* layout = new QHBoxLayout;
-  layout->addWidget( new QLabel( "Wall Time:" ));
-  layout->addWidget( wall_time_label_ );
-  layout->addStretch( 1000 );
-  layout->addWidget( new QLabel( "Wall Elapsed:" ));
-  layout->addWidget( wall_elapsed_label_ );
-  layout->addStretch( 1000 );
+  layout->addWidget( pause_button );
   layout->addWidget( new QLabel( "ROS Time:" ));
   layout->addWidget( ros_time_label_ );
-  layout->addStretch( 1000 );
-  layout->addWidget( new QLabel( "ROS Elapsed:" ));
+  layout->addWidget( new QLabel( "Elapsed:" ));
   layout->addWidget( ros_elapsed_label_ );
-  layout->addStretch( 1000 );
-  layout->addWidget( reset_button );
+  layout->addWidget( new QLabel( "Wall Time:" ));
+  layout->addWidget( wall_time_label_ );
+  layout->addWidget( new QLabel( "Elapsed:" ));
+  layout->addWidget( wall_elapsed_label_ );
   layout->setContentsMargins( 11, 5, 11, 5 );
   setLayout( layout );
 
-  connect( reset_button, SIGNAL( clicked( bool )), this, SLOT( reset() ));
+  connect( pause_button, SIGNAL( toggled( bool )), this, SLOT( pause( bool ) ));
 }
 
 QLineEdit* TimePanel::makeTimeLabel()
@@ -95,9 +92,16 @@ void TimePanel::update()
   fillTimeLabel( ros_elapsed_label_, vis_manager_->getROSTimeElapsed() );
 }
 
-void TimePanel::reset()
+void TimePanel::pause( bool pause )
 {
-  vis_manager_->resetTime();
+  if ( pause )
+  {
+    vis_manager_->setGlobalTime( ros::Time::now() );
+  }
+  else
+  {
+    vis_manager_->setGlobalTime( ros::Time() );
+  }
 }
 
 } // namespace rviz

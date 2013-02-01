@@ -52,8 +52,8 @@ public:
   virtual void onInitialize();
 
 protected Q_SLOTS:
-  /** Reset elapsed timers to 0. */
-  void reset();
+  /** Freeze ROS time */
+  void pause( bool pause );
 
   /** Read time values from VisualizationManager and update displays. */
   void update();
