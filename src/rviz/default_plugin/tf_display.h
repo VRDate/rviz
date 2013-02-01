@@ -68,7 +68,7 @@ public:
   TFDisplay();
   virtual ~TFDisplay();
 
-  virtual void update(float wall_dt, float ros_dt);
+  virtual void update(float wall_dt, float ros_dt, ros::Time time);
 
 protected:
   // Overrides from Display
@@ -83,9 +83,9 @@ private Q_SLOTS:
   void allEnabledChanged();
 
 private:
-  void updateFrames();
-  FrameInfo* createFrame(const std::string& frame);
-  void updateFrame(FrameInfo* frame);
+  void updateFrames(ros::Time time);
+  FrameInfo* createFrame(const std::string& frame, ros::Time time);
+  void updateFrame(FrameInfo* frame, ros::Time time);
   void deleteFrame(FrameInfo* frame, bool delete_properties);
 
   FrameInfo* getFrameInfo(const std::string& frame);

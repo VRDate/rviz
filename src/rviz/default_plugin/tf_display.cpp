@@ -315,13 +315,13 @@ void TFDisplay::allEnabledChanged()
   }
 }
 
-void TFDisplay::update(float wall_dt, float ros_dt)
+void TFDisplay::update(float wall_dt, float ros_dt, ros::Time time)
 {
   update_timer_ += wall_dt;
   float update_rate = update_rate_property_->getFloat();
   if( update_rate < 0.0001f || update_timer_ > update_rate )
   {
-    updateFrames();
+    updateFrames(time);
 
     update_timer_ = 0.0f;
   }
@@ -338,7 +338,7 @@ FrameInfo* TFDisplay::getFrameInfo( const std::string& frame )
   return it->second;
 }
 
-void TFDisplay::updateFrames()
+void TFDisplay::updateFrames(ros::Time time)
 {
   typedef std::vector<std::string> V_string;
   V_string frames;
@@ -362,11 +362,11 @@ void TFDisplay::updateFrames()
       FrameInfo* info = getFrameInfo( frame );
       if (!info)
       {
-        info = createFrame(frame);
+        info = createFrame(frame, time);
       }
       else
       {
-        updateFrame(info);
+        updateFrame(info, time);
       }
 
       current_frames.insert( info );
@@ -399,7 +399,7 @@ void TFDisplay::updateFrames()
 static const Ogre::ColourValue ARROW_HEAD_COLOR(1.0f, 0.1f, 0.6f, 1.0f);
 static const Ogre::ColourValue ARROW_SHAFT_COLOR(0.8f, 0.8f, 0.3f, 1.0f);
 
-FrameInfo* TFDisplay::createFrame(const std::string& frame)
+FrameInfo* TFDisplay::createFrame(const std::string& frame, ros::Time time)
 {
   FrameInfo* info = new FrameInfo( this );
   frames_.insert( std::make_pair( frame, info ) );
@@ -449,7 +449,7 @@ FrameInfo* TFDisplay::createFrame(const std::string& frame)
                                                         info->enabled_property_ );
   info->rel_orientation_property_->setReadOnly( true );
 
-  updateFrame( info );
+  updateFrame( info, time );
 
   return info;
 }
@@ -459,7 +459,7 @@ Ogre::ColourValue lerpColor(const Ogre::ColourValue& start, const Ogre::ColourVa
   return start * t + end * (1 - t);
 }
 
-void TFDisplay::updateFrame( FrameInfo* frame )
+void TFDisplay::updateFrame( FrameInfo* frame, ros::Time time )
 {
   tf::TransformListener* tf = context_->getTFClient();
 
@@ -521,7 +521,7 @@ void TFDisplay::updateFrame( FrameInfo* frame )
 
   Ogre::Vector3 position;
   Ogre::Quaternion orientation;
-  if( !context_->getFrameManager()->getTransform( frame->name_, ros::Time(), position, orientation ))
+  if( !context_->getFrameManager()->getTransform( frame->name_, time, position, orientation ))
   {
     std::stringstream ss;
     ss << "No transform from [" << frame->name_ << "] to frame [" << fixed_frame_.toStdString() << "]";
@@ -549,7 +549,7 @@ void TFDisplay::updateFrame( FrameInfo* frame )
 
   std::string old_parent = frame->parent_;
   frame->parent_.clear();
-  bool has_parent = tf->getParent( frame->name_, ros::Time(), frame->parent_ );
+  bool has_parent = tf->getParent( frame->name_, time, frame->parent_ );
   if( has_parent )
   {
     // If this frame has no tree property or the parent has changed,
@@ -593,7 +593,7 @@ void TFDisplay::updateFrame( FrameInfo* frame )
     {
       Ogre::Vector3 parent_position;
       Ogre::Quaternion parent_orientation;
-      if (!context_->getFrameManager()->getTransform(frame->parent_, ros::Time(), parent_position, parent_orientation))
+      if (!context_->getFrameManager()->getTransform(frame->parent_, time, parent_position, parent_orientation))
       {
         ROS_DEBUG( "Error transforming frame '%s' (parent of '%s') to frame '%s'",
                    frame->parent_.c_str(), frame->name_.c_str(), qPrintable( fixed_frame_ ));
