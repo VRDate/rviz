@@ -223,7 +223,7 @@ void DisplayGroup::fixedFrameChanged()
   }  
 }
 
-void DisplayGroup::update( float wall_dt, float ros_dt )
+void DisplayGroup::update( float wall_dt, float ros_dt, ros::Time time )
 {
   int num_children = displays_.size();
   for( int i = 0; i < num_children; i++ )
@@ -231,7 +231,7 @@ void DisplayGroup::update( float wall_dt, float ros_dt )
     Display* display = displays_.at( i );
     if( display->isEnabled() )
     {
-      display->update( wall_dt, ros_dt );
+      display->update( wall_dt, ros_dt, time );
     }
   }  
 }

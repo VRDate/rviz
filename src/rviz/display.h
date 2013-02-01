@@ -105,7 +105,7 @@ public:
   /** @brief Called periodically by the visualization manager.
    * @param wall_dt Wall-clock time, in seconds, since the last time the update list was run through.
    * @param ros_dt ROS time, in seconds, since the last time the update list was run through. */
-  virtual void update( float wall_dt, float ros_dt ) {}
+  virtual void update( float wall_dt, float ros_dt, ros::Time time );
 
   /** @brief Called to tell the display to clear its state */
   virtual void reset();
@@ -257,6 +257,10 @@ private:
   uint32_t visibility_bits_;
   QWidget* associated_widget_;
   PanelDockWidget* associated_widget_panel_;
+
+protected:
+  /// deprecated definition of update method
+  virtual void update( float wall_dt, float ros_dt ) {};
 };
 
 } // end namespace rviz

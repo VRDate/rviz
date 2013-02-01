@@ -234,6 +234,11 @@ public:
   void resetTime();
 
   /**
+   * @brief set the global time which is passed to all displays in update()
+   */
+  void setGlobalTime( ros::Time global_time );
+
+  /**
    * @brief Return a pointer to the SelectionManager.
    */
   SelectionManager* getSelectionManager() const { return selection_manager_; }
@@ -394,6 +399,8 @@ protected:
   bool disable_update_;
 
   OgreRenderQueueClearer* ogre_render_queue_clearer_;
+
+  ros::Time global_time_;
 
 private Q_SLOTS:
   void updateFixedFrame();

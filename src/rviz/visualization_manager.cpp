@@ -307,7 +307,7 @@ void VisualizationManager::onUpdate()
   last_update_ros_time_ = ros::Time::now();
   last_update_wall_time_ = ros::WallTime::now();
 
-  root_display_group_->update( wall_dt, ros_dt );
+  root_display_group_->update( wall_dt, ros_dt, global_time_ );
 
   view_manager_->update(wall_dt, ros_dt);
 
@@ -437,6 +437,20 @@ void VisualizationManager::resetTime()
 
   queueRender();
 }
+
+void VisualizationManager::setGlobalTime( ros::Time global_time )
+{
+  global_time_ = global_time;
+  if ( global_time == ros::Time() )
+  {
+    ros::Time::init();
+  }
+  else
+  {
+    ros::Time::setNow( global_time );
+  }
+}
+
 
 void VisualizationManager::addDisplay( Display* display, bool enabled )
 {

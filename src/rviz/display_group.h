@@ -131,7 +131,7 @@ public:
   virtual DisplayGroup* getGroupAt( int index ) const;
 
   /** @brief Call update() on all child Displays. */
-  virtual void update( float wall_dt, float ros_dt );
+  virtual void update( float wall_dt, float ros_dt, ros::Time time );
 
   /** @brief Reset this and all child Displays. */
   virtual void reset();

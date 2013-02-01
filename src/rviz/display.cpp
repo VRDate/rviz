@@ -279,6 +279,11 @@ void Display::setFixedFrame( const QString& fixed_frame )
   }
 }
 
+void Display::update( float wall_dt, float ros_dt, ros::Time time )
+{
+  update( wall_dt, ros_dt );
+}
+
 void Display::reset()
 {
   clearStatuses();
