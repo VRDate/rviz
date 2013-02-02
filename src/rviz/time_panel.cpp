@@ -32,6 +32,9 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QButtonGroup>
+#include <QGroupBox>
+#include <QComboBox>
 
 #include "visualization_manager.h"
 
@@ -48,11 +51,36 @@ TimePanel::TimePanel( QWidget* parent )
   ros_time_label_ = makeTimeLabel();
   ros_elapsed_label_ = makeTimeLabel();
 
+  // buttons to switch global time
+  QButtonGroup* group = new QButtonGroup(this);
+  group->setExclusive(true);
+
+  QPushButton* async_button = new QPushButton( "Async" );
+  async_button->setToolTip("Use latest time and TF transforms.");
+  async_button->setCheckable(true);
   QPushButton* pause_button = new QPushButton( "Pause" );
+  pause_button->setToolTip("Freeze time.");
   pause_button->setCheckable(true);
+  QPushButton* sync_button = new QPushButton( "Sync to:" );
+  sync_button->setToolTip("Sync all displays to the given time signal.");
+  sync_button->setCheckable(true);
+
+  group->addButton(async_button);
+  group->addButton(pause_button);
+  group->addButton(sync_button);
+
+  async_button->setChecked(true);
+
+  // choose time sync signal
+  sync_selector_ = new QComboBox(this);
 
   QHBoxLayout* layout = new QHBoxLayout;
+  layout->addWidget( new QLabel( "Time Mode:" ));
+  layout->addWidget( async_button );
   layout->addWidget( pause_button );
+  layout->addWidget( sync_button );
+  layout->addWidget( sync_selector_ );
+  layout->addSpacing(20);
   layout->addWidget( new QLabel( "ROS Time:" ));
   layout->addWidget( ros_time_label_ );
   layout->addWidget( new QLabel( "Elapsed:" ));
@@ -64,7 +92,9 @@ TimePanel::TimePanel( QWidget* parent )
   layout->setContentsMargins( 11, 5, 11, 5 );
   setLayout( layout );
 
-  connect( pause_button, SIGNAL( toggled( bool )), this, SLOT( pause( bool ) ));
+  connect( async_button, SIGNAL( toggled( bool )), this, SLOT( asyncToggled( bool ) ));
+  connect( pause_button, SIGNAL( toggled( bool )), this, SLOT( pauseToggled( bool ) ));
+  connect( sync_button, SIGNAL( toggled( bool )), this, SLOT( syncToggled( bool ) ));
 }
 
 QLineEdit* TimePanel::makeTimeLabel()
@@ -92,16 +122,25 @@ void TimePanel::update()
   fillTimeLabel( ros_elapsed_label_, vis_manager_->getROSTimeElapsed() );
 }
 
-void TimePanel::pause( bool pause )
+void TimePanel::pauseToggled( bool checked )
 {
-  if ( pause )
+  if ( checked )
   {
     vis_manager_->setGlobalTime( ros::Time::now() );
   }
-  else
+}
+
+void TimePanel::asyncToggled( bool checked )
+{
+  if ( checked )
   {
     vis_manager_->setGlobalTime( ros::Time() );
   }
+}
+
+void TimePanel::syncToggled( bool checked )
+{
+
 }
 
 } // namespace rviz
