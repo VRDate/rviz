@@ -57,7 +57,7 @@ public:
   void set( float length, float radius );
 
   // Overrides from Display
-  virtual void update(float dt, float ros_dt);
+  virtual void update(float dt, float ros_dt, ros::Time time);
 
 protected:
   // overrides from Display

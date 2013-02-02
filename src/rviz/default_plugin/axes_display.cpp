@@ -91,14 +91,14 @@ void AxesDisplay::updateShape()
   context_->queueRender();
 }
 
-void AxesDisplay::update( float dt, float ros_dt )
+void AxesDisplay::update( float dt, float ros_dt, ros::Time time )
 {
   QString qframe = frame_property_->getFrame();
   std::string frame = qframe.toStdString();
 
   Ogre::Vector3 position;
   Ogre::Quaternion orientation;
-  if( context_->getFrameManager()->getTransform( frame, ros::Time(), position, orientation ))
+  if( context_->getFrameManager()->getTransform( frame, time, position, orientation ))
   {
     axes_->setPosition( position );
     axes_->setOrientation( orientation );
@@ -107,7 +107,7 @@ void AxesDisplay::update( float dt, float ros_dt )
   else
   {
     std::string error;
-    if( context_->getFrameManager()->transformHasProblems( frame, ros::Time(), error ))
+    if( context_->getFrameManager()->transformHasProblems( frame, time, error ))
     {
       setStatus( StatusProperty::Error, "Transform", QString::fromStdString( error ));
     }
