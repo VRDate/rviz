@@ -61,6 +61,7 @@ Display::Display()
   , visibility_bits_( 0xFFFFFFFF )
   , associated_widget_( NULL )
   , associated_widget_panel_( NULL )
+  , deprecation_warning_printed_(false)
 {
   // Make the display-enable checkbox show up, and make it unchecked by default.
   setValue( false );
@@ -281,6 +282,11 @@ void Display::setFixedFrame( const QString& fixed_frame )
 
 void Display::update( float wall_dt, float ros_dt, ros::Time time )
 {
+  if ( ! deprecation_warning_printed_ )
+  {
+    ROS_WARN_STREAM( getNameStd() << ": This Display overwrites a deprecated version of Display::update. Please use 'update( float wall_dt, float ros_dt, ros::Time time )'" );
+    deprecation_warning_printed_ = true;
+  }
   update( wall_dt, ros_dt );
 }
 

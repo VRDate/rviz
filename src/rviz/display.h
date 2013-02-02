@@ -261,6 +261,7 @@ private:
 protected:
   /// deprecated definition of update method
   virtual void update( float wall_dt, float ros_dt ) {};
+  bool deprecation_warning_printed_;
 };
 
 } // end namespace rviz
