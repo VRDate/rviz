@@ -366,14 +366,12 @@ sensor_msgs::PointCloud2Ptr MultiLayerDepth::generatePointCloud() const
   point_cloud_out->is_bigendian = false;
   point_cloud_out->is_dense = false;
 
-  point_cloud_out->width = pixel_counter_;
-  point_cloud_out->height = 1;
-  point_cloud_out->row_step = point_cloud_out->point_step * point_cloud_out->width;
-
   std::vector<std::vector<DepthPixel*> >::const_iterator it;
   std::vector<std::vector<DepthPixel*> >::const_iterator it_end = multilayer_depth_.end();
 
   float* point_cloud_data_ptr = reinterpret_cast<float*>(&point_cloud_out->data[0]);
+
+  std::size_t point_couter = 0;
 
   for (it = multilayer_depth_.begin(); it != it_end; ++it)
   {
@@ -405,8 +403,13 @@ sensor_msgs::PointCloud2Ptr MultiLayerDepth::generatePointCloud() const
         ++point_cloud_data_ptr;
 
         --depth_pixel->time_out_;
+        ++point_couter;
       }
     }
+
+    point_cloud_out->width = point_couter;
+    point_cloud_out->height = 1;
+    point_cloud_out->row_step = point_cloud_out->point_step * point_cloud_out->width;
 
     return point_cloud_out;
   }
