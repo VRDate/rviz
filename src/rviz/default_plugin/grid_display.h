@@ -64,7 +64,7 @@ public:
 
   // Overrides from Display
   virtual void onInitialize();
-  virtual void update(float dt, float ros_dt);
+  virtual void update(float dt, float ros_dt, ros::Time time);
 
 private Q_SLOTS:
   void updateCellCount();
